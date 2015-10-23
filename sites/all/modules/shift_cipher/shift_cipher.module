@@ -32,5 +32,53 @@ function shift_cipher_form() {
         '#description' => t('How many places would you like to shift?'),
     );
 
-    $
+    $form['shift_direction'] = array(
+        '#title' => 'Shift Direction',
+        '#type' => 'textfield',
+        '#description' => t('Which direction would you like to shift?'),
+    );
+
+    $form['message'] = array(
+        '#title' => 'Message',
+        '#type' => 'textfield',
+        '#description' => t('Write your message here.'),
+    );
+
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => 'Encrypt!',
+    );
+
+    return $form;
+}
+
+/*
+** Functions called on submit:
+** Translates the message using the shift cipher.
+*/
+function shift_cipher_form_submit($form, &$form_state) {
+    $shift_value = $form_state['values']['shift_value'];
+    $shift_direction = $form_state['values']['shift_direction'];
+    $message = $form_state['values']['message'];
+
+    $alphabet = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');
+
+    $lower_case_message = strtolower($message);
+    $split_message = str_split($lower_case_message, 1);
+
+    foreach($split_message as &$letter) {
+        if(in_array($letter, $alphabet)) {
+            $letter = $alphabet[array_search($letter, $alphabet) + $shift_value];
+        }
+    }
+
+    $encrypted = implode('', $split_message);
+
+    $_SESSION['shift_cipher_output'] = $encrypted;
+    $form_state['redirect'] = 'shift_cipher_success_page';
+}
+
+function shift_cipher_success() {
+    $encrypted = $_SESSION['shift_cipher_output'];
+    return $encrypted;
 }
