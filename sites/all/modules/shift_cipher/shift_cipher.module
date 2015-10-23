@@ -67,18 +67,32 @@ function shift_cipher_form_submit($form, &$form_state) {
         $shift_value = $shift_value * -1;
     }
 
-    //Manipulate the message string based on form values:
     $alphabet = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');
 
+    //Lower case and split string for manipulation:
     $lower_case_message = strtolower($message);
     $split_message = str_split($lower_case_message, 1);
 
+    //Loop through message
     foreach($split_message as &$letter) {
+        // replacing only letters and ignoring spaces/punctuation.
         if(in_array($letter, $alphabet)) {
-            $letter = $alphabet[array_search($letter, $alphabet) + $shift_value];
+            $index = array_search($letter, $alphabet) + $shift_value;
+            //If shift_value takes $index beyond length of $alphabet in either direction, return to beginning or end as needed...
+            if($index > 25) {
+                $index = $index - 26;
+                $letter = $alphabet[$index];
+            } elseif($index < 0) {
+                $index = $index + 26;
+                $letter = $alphabet[$index];
+            //...otherwise, simply replace the letter according to shift_value.
+            } else {
+                $letter = $alphabet[$index];
+            }
         }
     }
 
+    //Implode array, making it a string again.
     $encrypted = implode('', $split_message);
 
     $_SESSION['shift_cipher_output'] = $encrypted;
