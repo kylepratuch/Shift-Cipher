@@ -1,0 +1,5 @@
+name = Shift Cipher
+description = Encrypts messages by shifting letters left or right in the alphabet.
+package = Drupal Code Review 2
+core = 7.x
+files[] = shift_cipher.module

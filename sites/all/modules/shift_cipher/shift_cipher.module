@@ -1,0 +1,36 @@
+<?php
+
+/*
+** Basic menu setup:
+** Creates a menu link to the module form and success/results page.
+*/
+function shift_cipher_menu() {
+    $items['shift_cipher'] = array(
+        'title' => 'Shift Cipher',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('shift_cipher_form'),
+        'access callback' => TRUE,
+        'type' => MENU_NORMAL_ITEM,
+    );
+
+    $items['shift_cipher_success_page'] = array(
+        'title' => 'Success',
+        'page callback' => 'shift_cipher_success',
+        'access callback' => TRUE,
+        'type' => MENU_CALLBACK,
+    );
+    return $items;
+}
+
+/*
+** Module form setup:
+*/
+function shift_cipher_form() {
+    $form['shift_value'] = array(
+        '#title' => 'Shift Value',
+        '#type' => 'textfield',
+        '#description' => t('How many places would you like to shift?'),
+    );
+
+    $
+}
