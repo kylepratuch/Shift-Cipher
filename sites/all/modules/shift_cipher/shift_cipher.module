@@ -30,18 +30,24 @@ function shift_cipher_form() {
         '#title' => 'Shift Value',
         '#type' => 'textfield',
         '#description' => t('How many places would you like to shift?'),
+        '#required' => TRUE,
+        '#element_validate' => array('element_validate_integer_positive'),
     );
 
     $form['shift_direction'] = array(
         '#title' => 'Shift Direction',
         '#type' => 'textfield',
         '#description' => t('Which direction would you like to shift?'),
+        '#required' => TRUE,
+        '#element_validate' => array('element_validate_shift_direction'),
     );
 
     $form['message'] = array(
         '#title' => 'Message',
         '#type' => 'textfield',
         '#description' => t('Write your message here.'),
+        '#required' => TRUE,
+        '#element_validate' => array('element_validate_message_field'),
     );
 
     $form['submit'] = array(
@@ -53,17 +59,36 @@ function shift_cipher_form() {
 }
 
 /*
+** Custom form field validation:
+*/
+function element_validate_shift_direction($element, $form_state) {
+    $shift_direction = strtolower($form_state['values']['shift_direction']);
+    if ($shift_direction != 'left' && $shift_direction != 'right') {
+        form_error($element, t("Please enter either 'left' or 'right' as a direction."));
+    }
+}
+
+function element_validate_message_field($element, $form_state) {
+    $message = str_split($form_state['values']['message']);
+    foreach ($message as $letter) {
+        if (ctype_digit($letter)) {
+            form_error($element, t("Please enter only letters, spaces, or punctuation."));
+        }
+    }
+}
+
+/*
 ** Functions called on submit:
 ** Translates the message using the shift cipher.
 */
 function shift_cipher_form_submit($form, &$form_state) {
     //Get values from form:
     $shift_value = $form_state['values']['shift_value'];
-    $shift_direction = $form_state['values']['shift_direction'];
+    $shift_direction = strtolower($form_state['values']['shift_direction']);
     $message = $form_state['values']['message'];
 
     //Invert shift_value if direction is left.
-    if($shift_direction == "left") {
+    if(strtolower($shift_direction) == "left") {
         $shift_value = $shift_value * -1;
     }
 
@@ -81,10 +106,8 @@ function shift_cipher_form_submit($form, &$form_state) {
             //If shift_value takes $index beyond length of $alphabet in either direction, return to beginning or end as needed...
             if($index > 25) {
                 $index = $index - 26;
-                $letter = $alphabet[$index];
             } elseif($index < 0) {
                 $index = $index + 26;
-                $letter = $alphabet[$index];
             //...otherwise, simply replace the letter according to shift_value.
             } else {
                 $letter = $alphabet[$index];
